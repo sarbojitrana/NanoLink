@@ -1,13 +1,11 @@
-import dotenv from "dotenv"
+import "dotenv/config"
 
-dotenv.config({
-    path : './.env'
-})
 
 import {app} from "./app.js"
 
 import { createUrlTable } from "./models/urlModel.js"
 import {pool} from "./config/db.js"
+
 
 
 const startServer = async () =>{

@@ -35,20 +35,20 @@ const createShortUrl = asyncHandler(async(req : Request, res : Response, next : 
 
 const redirectToOriginal = asyncHandler( async(req : Request, res : Response, next : NextFunction) =>{
 
-    const {short_code} = req.params ;
-    const id = decode(short_code);
+    const {shortCode} = req.params ;
+    const id = decode(shortCode);
 
     const query = `SELECT original_url FROM urls WHERE id = $1`
 
     const entry = await pool.query(query, [id])
 
-    if(!entry){
+    if(entry.rowCount === 0){
         throw new ApiError(404, "URL not found")
     }
 
     const originalUrl = entry.rows[0].original_url
 
-    pool.query("UPDATE urls SET clicks = clicks + 1 WHERE short_code = $1", [short_code]);
+    pool.query("UPDATE urls SET clicks = clicks + 1 WHERE id = $1", [id]);
 
     return res.redirect(originalUrl)
 

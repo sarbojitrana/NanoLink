@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node dist/server.js",
-    "dev": "nodemon --watch src --ext ts,js --exec \"ts-node\" src/server.ts",
+    "dev": "nodemon --exec tsx -r dotenv/config src/server.ts",
     "build": "tsc",
     "lint": "eslint 'src/**/*.{ts,js}'"
   },
@@ -28,6 +28,7 @@
     "@types/pg": "^8.15.6",
     "nodemon": "^3.1.11",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }
