@@ -1,7 +1,8 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import router from "./routes/url.routes.js"
+import authRouter from "./routes/auth.routes.js";
+import urlRouter from "./routes/url.routes.js"
 import { errorHandler } from "./middlewares/errorHandler.js";
 import { ApiError } from "./utils/ApiError.js";
 
@@ -29,7 +30,8 @@ app.use(cookieParser());
 
 
 
-app.use("/", router)
+app.use("/", urlRouter)
+app.use("/auth", authRouter);
 
 app.use((req,res,next)=>{
     next(new ApiError(404, "Route not found"));

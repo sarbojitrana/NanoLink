@@ -4,6 +4,7 @@ import "dotenv/config"
 import {app} from "./app.js"
 
 import { createUrlTable } from "./models/urlModel.js"
+import { createUserTable } from "./models/userModel.js"
 import {pool} from "./config/db.js"
 
 
@@ -14,8 +15,11 @@ const startServer = async () =>{
         await pool.query(`SELECT NOW()`);
         console.log("Database Connection Verified!!!")
 
+        await createUserTable() ;
+        console.log("Users table created Successfully")
+
         await createUrlTable()
-        console.log("Tables created successfully")
+        console.log("URLs table created successfully")
 
 
         const PORT = process.env.PORT || 3000
