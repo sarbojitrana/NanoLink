@@ -10,13 +10,15 @@ router.route("/shorten").post(
     verifyJWT, createShortUrl
 )
 
+router.route("/dashboard/my-urls").get(
+    verifyJWT, getUrls 
+)
+
+
 router.route("/:shortCode").get(
     redirectToOriginal
 )
 
-router.route("/my-urls").get(
-    verifyJWT, getUrls 
-)
 
 
 
