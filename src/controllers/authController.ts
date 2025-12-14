@@ -12,37 +12,23 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID) ;
 
 const googleLogin = asyncHandler(async(req : Request, res: Response, next :NextFunction)=>{
     const {token} = req.body ;
+
     if(!token){
         throw new ApiError(400, "No token provided");
     }
 
-    let googleId, email, name, picture;
-    if(token === "DEV_TEST_TOKEN"){
-        console.log("USING DEVELOPER TESTING");
-        googleId = "123456789";
-        email = "test@nanolink.com";
-        name = "Test User";
-        picture = "https://github.com/torvalds.png";
-        
-    }
-    else{
-        const ticket = await client.verifyIdToken({
+    const ticket = await client.verifyIdToken({
             idToken : token,
             audience : process.env.GOOGLE_CLIENT_ID
-        });
+    });
 
-        const payload = ticket.getPayload()
+    const payload = ticket.getPayload();
 
-        if(!payload){
-            throw new ApiError(400, "Invalid Google Token")
-        }
-
-        googleId = payload.sub;
-        email = payload.email;
-        name = payload.name;
-        picture = payload.picture;
-
+    if(!payload){
+        throw new ApiError(400, "Invalid Google Token")
     }
+    const {sub : googleId , email, name, picture} = payload
+
 
     
 

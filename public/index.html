@@ -5,85 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NanoLink - Login</title>
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f2f5; }
-        .card { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
-        h1 { margin-bottom: 1.5rem; color: #333; }
-        .dev-btn { margin-top: 20px; padding: 10px 20px; background: #333; color: white; border: none; cursor: pointer; border-radius: 4px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f2f5; margin: 0; }
+        .card { background: white; padding: 3rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; width: 100%; max-width: 400px; }
+        h1 { margin-bottom: 0.5rem; color: #1a1a1a; font-size: 2rem; font-weight: 700; }
+        p { color: #666; margin-bottom: 2rem; }
+        #buttonDiv { display: flex; justify-content: center; height: 50px; }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <h1>NanoLink Login</h1>
+        <h1>NanoLink</h1>
+        <p>Shorten your links securely.</p>
         
         <div id="buttonDiv"></div>
-
-        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
-
-        <button class="dev-btn" onclick="devLogin()">Developer Login (Backdoor)</button>
     </div>
 
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <script>
-        // --- CONFIGURATION ---
-        // Ideally fetch this from an API, but for public files, hardcoding the PUBLIC client ID is common.
-        // REPLACE THIS with your actual Google Client ID ending in .apps.googleusercontent.com
-        const GOOGLE_CLIENT_ID = proces.env.GOOGLE_CLIENT_ID; 
+        const GOOGLE_CLIENT_ID = "940375498624-m4juig6oc3ne06vj1id7r9ap6ht8bnsh.apps.googleusercontent.com"; 
 
-        // --- GOOGLE AUTH LOGIC ---
         window.onload = function () {
             google.accounts.id.initialize({
                 client_id: GOOGLE_CLIENT_ID,
-                callback: handleCredentialResponse // Calls this function when user signs in
+                callback: handleCredentialResponse
             });
             google.accounts.id.renderButton(
                 document.getElementById("buttonDiv"),
-                { theme: "outline", size: "large" } 
+                { theme: "outline", size: "large", width: 250 } 
             );
+            google.accounts.id.prompt(); 
         };
 
-        // --- THE HANDLER (This connects Frontend to Backend) ---
         async function handleCredentialResponse(response) {
-            console.log("Google Token Received:", response.credential);
+            console.log("Google Token Received. Sending to backend...");
 
-            // Step 1: Send the token to YOUR backend
             try {
                 const serverResponse = await fetch('/auth/google', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ token: response.credential })
                 });
 
                 const data = await serverResponse.json();
 
                 if (data.success) {
-                    console.log("Login Success!", data);
-                    // Step 2: Redirect to dashboard
+                    console.log("Login Success!");
                     window.location.href = "/dashboard.html";
                 } else {
                     alert("Login Failed: " + data.message);
                 }
             } catch (error) {
                 console.error("Error talking to backend:", error);
+                alert("Server error during login.");
             }
-        }
-
-        // --- DEV BACKDOOR LOGIC ---
-        async function devLogin() {
-            try {
-                const response = await fetch('/auth/google', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token: "DEV_TEST_TOKEN" })
-                });
-                const data = await response.json();
-                if(data.success) {
-                    window.location.href = "/dashboard.html";
-                }
-            } catch(e) { console.error(e); }
         }
     </script>
 </body>
